@@ -17,6 +17,7 @@ def index(x,y,dimension):
 class Board(object):
     def __init__(self,tiles,dimension):
         self._rows = tiles
+        self._key = hash(tuple(tiles))
         self.dimension = dimension
 
     def __str__(self):
@@ -50,8 +51,7 @@ class Board(object):
         return self._rows == other._rows
 
     def __hash__(self):
-        immutable_me = tuple(self._rows)
-        return hash(immutable_me)
+        return self._key
 
     def _coordinatesOf(self,value):
         index = self._rows.index(value)
