@@ -67,6 +67,30 @@ class Board(object):
     def heuristic(self,other):
         return sum(self._manhattanDistance(k,other) for k in range(1,self.dimension**2))
 
+    def _inversions(self):
+        parity = 0
+        for (idx,tile) in enumerate(self._rows):
+            if tile == 0:
+                continue
+            for other in self._rows[idx+1:]:
+                if other == 0:
+                    continue
+                if tile > other:
+                    parity+=1
+        return parity
+
+    def solvable(self):
+        isOdd = self.dimension % 2
+        inversionsEven = not self._inversions() % 2
+        
+        if isOdd:
+            return inversionsEven 
+        else:
+           (column, row) = self._coordinatesOf(0)
+           row_from_bottom = self.dimension - 1 - row
+           oddRowFromBottom = row_from_bottom % 2
+           return inversionsEven == oddRowFromBottom
+
 def backtrack(vertex, provenance):
     path = []
     current = vertex
@@ -80,6 +104,8 @@ def backtrack(vertex, provenance):
 
 
 def BFS(start,end):
+    if not start.solvable():
+        return None
     provenance = {}
     visited = set([start])
     queue = [start]
@@ -96,6 +122,8 @@ def BFS(start,end):
     return None
 
 def a_star(start,end):
+    if not start.solvable():
+        return None
     provenance = {}
     visited = set([start])
     queue = [(0,start)]
@@ -104,6 +132,7 @@ def a_star(start,end):
     }
     while queue:
         (priority, currentVertex) = heappop(queue)
+        print currentVertex.heuristic(end)
         if currentVertex == end:
             return backtrack(currentVertex, provenance)
         d = distance[currentVertex]
@@ -112,13 +141,13 @@ def a_star(start,end):
             if nextVertex not in visited or w < distance[nextVertex]:
                 visited.add(nextVertex)
                 provenance[nextVertex] = currentVertex
-                pprime = w + nextVertex.heuristic()
+                pprime = w + nextVertex.heuristic(end)
                 heappush(queue,(pprime,nextVertex))
                 distance[nextVertex] = w
     return None
 
 if __name__=='__main__':
-    dim = 3
+    dim = 4
     end = Board(tiles(dim),dim)
     start = generate_random_board(dim)
     solution = a_star(start,end)
