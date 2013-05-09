@@ -48,7 +48,7 @@ class Board(object):
                       candidates)
 
     def __eq__(self,other):
-        return self._rows == other._rows
+        return self._key == other._key
 
     def __hash__(self):
         return self._key
@@ -132,18 +132,19 @@ def a_star(start,end):
     }
     while queue:
         (priority, currentVertex) = heappop(queue)
-        print currentVertex.heuristic(end)
         if currentVertex == end:
             return backtrack(currentVertex, provenance)
         d = distance[currentVertex]
         for nextVertex in currentVertex.neighbors():
             w = d + 1
-            if nextVertex not in visited or w < distance[nextVertex]:
-                visited.add(nextVertex)
+            newVertex = nextVertex not in visited
+            if newVertex or w < distance[nextVertex]:
                 provenance[nextVertex] = currentVertex
-                pprime = w + nextVertex.heuristic(end)
-                heappush(queue,(pprime,nextVertex))
                 distance[nextVertex] = w
+                if newVertex:
+                    pprime = w + nextVertex.heuristic(end)
+                    heappush(queue,(pprime,nextVertex))
+                    visited.add(nextVertex)
     return None
 
 if __name__=='__main__':
