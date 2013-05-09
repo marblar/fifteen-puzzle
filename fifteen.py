@@ -87,7 +87,7 @@ class Board(object):
             return inversionsEven 
         else:
            (column, row) = self._coordinatesOf(0)
-           row_from_bottom = self.dimension - 1 - row
+           row_from_bottom = self.dimension - row
            oddRowFromBottom = row_from_bottom % 2
            return inversionsEven == oddRowFromBottom
 
