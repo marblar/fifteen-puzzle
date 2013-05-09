@@ -59,14 +59,13 @@ class Board(object):
         x = index % self.dimension
         return (x,y)
 
-    def _manhattanDistance(self,k):
-        # This only works for the usual success position, but runs much faster than the arbitrary case
-        x1,y1 = (k % self.dimension, k / self.dimension)
+    def _manhattanDistance(self,k,other):
+        x1,y1 = other._coordinatesOf(k)
         x2,y2 = self._coordinatesOf(k)
         return abs(x1-x2) + abs(y1-y2)
 
-    def heuristic(self):
-        return sum(self._manhattanDistance(k) for k in range(self.dimension**2 - 1))
+    def heuristic(self,other):
+        return sum(self._manhattanDistance(k,other) for k in range(1,self.dimension**2))
 
 def backtrack(vertex, provenance):
     path = []
